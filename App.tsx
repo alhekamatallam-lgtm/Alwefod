@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import type { WofoodProjectData, WalakAlAjrProjectData, TranslationProjectData, IftarProjectData, SuqiaProjectData, SuqiaSatisfactionData, IftarSatisfactionData, CalculatedStats, Project, YearlyStats, StatRowConfig } from './types';
+import type { WofoodProjectData, WalakAlAjrProjectData, TranslationProjectData, IftarProjectData, SuqiaProjectData, SuqiaSatisfactionData, IftarSatisfactionData, CalculatedStats, Project, YearlyStats, StatRowConfig, Partner } from './types';
 import ProjectSection from './components/ProjectSection';
 import DashboardHeader from './components/DashboardHeader';
+import PartnersSection from './components/PartnersSection';
 
 // Icons for projects
 import UsersIcon from './components/icons/UsersIcon';
@@ -417,6 +418,7 @@ const ProjectSectionSkeleton = () => (
 
 const App: React.FC = () => {
   const [projects, setProjects] = useState<Project[] | null>(null);
+  const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState<string>(FALLBACK_LOGO_URL);
@@ -457,6 +459,10 @@ const App: React.FC = () => {
         setLogoUrl(wofoodJson.data.logo[0].logo);
       }
       
+      if (iftarSatisfactionJson?.data?.partenr && Array.isArray(iftarSatisfactionJson.data.partenr)) {
+        setPartners(iftarSatisfactionJson.data.partenr);
+      }
+
       const processedProjects: (Project | null)[] = [
         processWofoodProject(wofoodJson),
         processWalakAlAjrProject(walakAlAjrJson),
@@ -510,10 +516,10 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen text-gray-800 font-sans p-4 sm:p-8">
       <main className="max-w-7xl mx-auto">
-        <header className="text-center mb-12">
-          <img src={logoUrl} alt="شعار جمعية وفود الحرم" className="mx-auto h-28 w-auto mb-4" />
-          <h1 className="text-4xl md:text-5xl font-extrabold text-brand-green-800">لوحة المنجزات الرقمية</h1>
-          <p className="text-xl md:text-2xl text-gray-600 mt-2">متابعة حية لأداء وإنجازات مشاريعنا</p>
+        <header className="text-center mb-8">
+          <img src={logoUrl} alt="شعار جمعية وفود الحرم" className="mx-auto h-16 sm:h-20 w-auto mb-2 sm:mb-3" />
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-brand-green-800">لوحة المنجزات الرقمية</h1>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 mt-1 sm:mt-2">متابعة حية لأداء وإنجازات مشاريعنا</p>
         </header>
         
         {error && (
@@ -549,6 +555,8 @@ const App: React.FC = () => {
             !error && <p className="text-center text-gray-500">لا توجد بيانات لعرضها.</p>
           )
         )}
+        
+        <PartnersSection partners={partners} loading={loading} />
 
         <footer className="text-center mt-16 text-gray-500 text-sm">
           <p>جميع الحقوق محفوظة &copy; {new Date().getFullYear()} جمعية وفود الحرم</p>

@@ -87,6 +87,11 @@ export interface SuqiaSatisfactionData {
     [key:string]: any;
 }
 
+// Data for partners
+export interface Partner {
+    "الشريك": string;
+    "الشعار": string;
+}
 
 // A generic structure for calculated stats for any project
 export interface CalculatedStats {

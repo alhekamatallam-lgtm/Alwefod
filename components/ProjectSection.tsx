@@ -44,12 +44,12 @@ const formatValue = (statKey: string, value: number | undefined) => {
     if (statKey === 'satisfactionPercentage') {
         return (
             <div className="flex items-center gap-3">
-                <span className="font-mono text-lg w-16 text-right">{num.toFixed(1)}%</span>
+                <span className="font-mono text-base sm:text-lg w-14 sm:w-16 text-right">{num.toFixed(1)}%</span>
                 <ProgressBar value={num} />
             </div>
         );
     }
-    return <span className="font-mono text-lg">{num.toLocaleString('en-US')}</span>;
+    return <span className="font-mono text-base sm:text-lg">{num.toLocaleString('en-US')}</span>;
 };
 
 const ProjectSection: React.FC<{ project: Project }> = ({ project }) => {
@@ -100,7 +100,7 @@ const ProjectSection: React.FC<{ project: Project }> = ({ project }) => {
     return (
         <div className="bg-white rounded-2xl shadow-lg max-w-5xl mx-auto overflow-hidden transition-all duration-300 ease-in-out">
           <div 
-            className="flex justify-between items-center p-6 md:p-8 cursor-pointer hover:bg-gray-50/50"
+            className="flex justify-between items-center p-4 sm:p-6 md:p-8 cursor-pointer hover:bg-gray-50/50"
             onClick={() => setIsTableVisible(!isTableVisible)}
             aria-expanded={isTableVisible}
             aria-controls={`comparison-table-${name.replace(/\s/g, '-')}`}
@@ -108,12 +108,12 @@ const ProjectSection: React.FC<{ project: Project }> = ({ project }) => {
             tabIndex={0}
             onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setIsTableVisible(!isTableVisible)}
           >
-            <div className="flex items-center gap-5">
-              {Icon && <div className="bg-brand-green-100 p-3 rounded-lg"><Icon className="w-8 h-8 text-brand-green-700" /></div>}
+            <div className="flex items-center gap-3 sm:gap-5">
+              {Icon && <div className="bg-brand-green-100 p-2 sm:p-3 rounded-lg"><Icon className="w-7 h-7 sm:w-8 sm:h-8 text-brand-green-700" /></div>}
               <div>
-                <h2 className="text-xl md:text-2xl font-bold text-gray-800">{name}</h2>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">{name}</h2>
                 <div className="flex items-center gap-4 mt-1">
-                    <p className="text-sm font-semibold text-gray-500">{primaryStat.label}: <span className="font-bold text-brand-green-800 font-mono text-base">{primaryStat.value}</span></p>
+                    <p className="text-xs sm:text-sm font-semibold text-gray-500">{primaryStat.label}: <span className="font-bold text-brand-green-800 font-mono text-sm sm:text-base">{primaryStat.value}</span></p>
                     {averageIndicator.hasData && (
                         <div className={`flex items-center gap-1 font-mono font-bold text-sm px-3 py-1 rounded-full ${averageIndicator.value >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`} dir="ltr">
                             {averageIndicator.value >= 0 ? <ArrowUpIcon className="w-4 h-4" /> : <ArrowDownIcon className="w-4 h-4" />}
@@ -131,39 +131,39 @@ const ProjectSection: React.FC<{ project: Project }> = ({ project }) => {
             className={`transition-all duration-500 ease-in-out grid ${isTableVisible ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
             >
             <div className="overflow-hidden">
-                <div className="px-6 md:px-8 pb-6 md:pb-8">
+                <div className="px-4 pb-4 sm:px-6 md:px-8 sm:pb-6 md:pb-8">
                     <div className="overflow-x-auto border border-gray-200 rounded-lg bg-slate-50/30">
                         <table className="w-full text-right table-auto">
                         <thead className="border-b-2 border-gray-200">
                             <tr className="bg-slate-50">
-                                <th className="p-4 text-sm font-bold uppercase text-gray-600 tracking-wider text-right">المنجز</th>
+                                <th className="p-3 sm:p-4 text-xs sm:text-sm font-bold uppercase text-gray-600 tracking-wider text-right">المنجز</th>
                                 { !isSimpleView && years.map(year => (
-                                    <th key={year} className="p-4 text-sm font-bold uppercase text-gray-600 tracking-wider text-center">{year}</th>
+                                    <th key={year} className="p-3 sm:p-4 text-xs sm:text-sm font-bold uppercase text-gray-600 tracking-wider text-center">{year}</th>
                                 ))}
                                 { !isSimpleView && years.length > 1 &&
-                                    <th className="p-4 text-sm font-bold uppercase text-gray-600 tracking-wider text-center">المؤشر</th>
+                                    <th className="p-3 sm:p-4 text-xs sm:text-sm font-bold uppercase text-gray-600 tracking-wider text-center">المؤشر</th>
                                 }
-                                <th className="p-4 text-sm font-bold uppercase text-brand-green-800 tracking-wider text-center">الإجمالي</th>
+                                <th className="p-3 sm:p-4 text-xs sm:text-sm font-bold uppercase text-brand-green-800 tracking-wider text-center">الإجمالي</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                             {statRows.map(rowConfig => (
                                 <tr key={rowConfig.statKey} className="odd:bg-white even:bg-slate-50/70">
-                                    <td className="p-4 font-medium text-gray-800">{rowConfig.label}</td>
+                                    <td className="p-3 sm:p-4 font-medium text-gray-800 text-sm sm:text-base">{rowConfig.label}</td>
                                     { !isSimpleView && years.map(year => (
-                                        <td key={year} className="p-4 text-center text-gray-700">
+                                        <td key={year} className="p-3 sm:p-4 text-center text-gray-700">
                                             {formatValue(rowConfig.statKey, stats?.[year]?.[rowConfig.statKey])}
                                         </td>
                                     ))}
                                     { !isSimpleView && years.length > 1 && (
-                                        <td className="p-4 text-center">
+                                        <td className="p-3 sm:p-4 text-center">
                                             <PerformanceIndicator 
                                                 oldValue={stats[years[0]][rowConfig.statKey]} 
                                                 newValue={stats[years[1]][rowConfig.statKey]} 
                                             />
                                         </td>
                                     )}
-                                    <td className={`p-4 text-center font-bold ${rowConfig.statKey !== 'satisfactionPercentage' ? 'text-brand-green-800' : 'text-gray-800'}`}>
+                                    <td className={`p-3 sm:p-4 text-center font-bold ${rowConfig.statKey !== 'satisfactionPercentage' ? 'text-brand-green-800' : 'text-gray-800'}`}>
                                         {formatValue(rowConfig.statKey, stats?.['total']?.[rowConfig.statKey])}
                                     </td>
                                 </tr>
