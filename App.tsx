@@ -340,7 +340,7 @@ const processSuqiaProject = (jsonData: any, satisfactionJsonData?: any): Project
             "ما مدى رضاك عن الوقت المستغرق في التوزيع؟",
             "ما مدى رضاك عن مكان تقديم الخدمة ونظافته وتنظيمه؟",
             "ما مدى رضاك عن عبـــوات المياه ؟",
-            "هل المياه مُبردة بشكل مناسب?",
+            "هل المياه مُبردة بشكل مناسب؟",
         ];
         
         let totalScore = 0;
@@ -377,7 +377,6 @@ const processSuqiaProject = (jsonData: any, satisfactionJsonData?: any): Project
     const calculatedTotalStats = calculateSuqiaStats(allRecords);
 
     if (satisfactionJsonData?.data?.response) {
-      // FIX: Corrected a typo in the type assertion from `a any[]` to `any[]`.
       const satisfactionRecords = (satisfactionJsonData.data.response as any[])
         .map(cleanRecordKeys)
         .filter(Boolean) as SuqiaSatisfactionData[];
