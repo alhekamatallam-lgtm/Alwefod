@@ -22,7 +22,10 @@ const PartnersSection: React.FC<PartnersSectionProps> = ({ partners, loading }) 
         return <PartnersSectionSkeleton />;
     }
     
-    if (!partners || partners.length === 0) {
+    // Filter out any partners that are missing essential data to prevent rendering errors.
+    const validPartners = partners.filter(p => p && p.الشريك && p.الشعار);
+
+    if (validPartners.length === 0) {
         return null;
     }
 
@@ -30,7 +33,7 @@ const PartnersSection: React.FC<PartnersSectionProps> = ({ partners, loading }) 
         <section className="text-center mt-16 max-w-5xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-700 mb-8">شركاء النجاح</h2>
             <div className="flex justify-center items-center flex-wrap gap-x-8 sm:gap-x-12 md:gap-x-16 gap-y-8">
-                {partners.map((partner) => (
+                {validPartners.map((partner) => (
                     <div key={partner.الشريك} className="group">
                          <img 
                             src={partner.الشعار} 
