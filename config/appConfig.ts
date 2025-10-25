@@ -6,7 +6,7 @@ export const PROJECTS_CONFIG: ProjectConfig[] = [
     {
         name: 'مشروع وفود الحرم',
         type: 'wofood',
-        dataSourceUrl: 'https://script.google.com/macros/s/AKfycbyGAXoa3UU3WycERQ8CN7F_zaFBmFaeD0MfTwovFRl7J9n-6XTk1qu1AinxT_wRf9cg/exec',
+        dataSourceUrl: 'https://script.google.com/macros/s/AKfycbwbbrvaMzSgMDE7Mqnm4pTn-CYmmjnuZu3mkB4yXThVf4klxRFl3skEUu-zEgRuJjrJ/exec',
     },
     {
         name: 'مشروع ولك الأجر',
