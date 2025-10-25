@@ -2,6 +2,7 @@ import React from 'react';
 import useDashboardData from './hooks/useDashboardData';
 import LoadingSpinner from './components/LoadingSpinner';
 import PartnersSection from './components/PartnersSection';
+import ProjectSection from './components/ProjectSection';
 
 const App: React.FC = () => {
   const { data, loading, error } = useDashboardData();
@@ -38,14 +39,14 @@ const App: React.FC = () => {
     }
 
     return (
-      <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
+      <div className="flex flex-col min-h-screen bg-gray-100 font-sans">
         <header className="bg-white shadow-sm py-5 px-4 sm:px-6 lg:px-8 border-b-4 border-brand-green-700">
           <div className="max-w-5xl mx-auto flex justify-center items-center">
             <img src={data.logoUrl} alt="شعار جمعية وفود الحرم" className="h-28 w-auto object-contain" />
           </div>
         </header>
         
-        <main className="flex-grow container mx-auto px-4 py-12">
+        <main className="flex-grow container mx-auto px-4 py-12 space-y-16">
             <div className="text-center">
                 <h1 className="text-4xl sm:text-5xl font-extrabold text-brand-green-900 tracking-tight">
                     لوحة منجزات وفود الحرم
@@ -54,7 +55,9 @@ const App: React.FC = () => {
                     نحو خدمة متكاملة ومستدامة لضيوف الرحمن
                 </p>
             </div>
-            {/* The main content for projects will be added here in the future */}
+            
+            {data.projectData && <ProjectSection data={data.projectData} />}
+
         </main>
 
         <PartnersSection partners={data.partners} />
