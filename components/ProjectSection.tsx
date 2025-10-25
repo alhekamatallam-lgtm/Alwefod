@@ -92,12 +92,12 @@ const ProjectSection: React.FC<{ project: Project }> = ({ project }) => {
         const changes: number[] = [];
 
         statKeys.forEach(key => {
-            const oldValue = stats[years[0]][key];
-            const newValue = stats[years[1]][key];
-            if (oldValue > 0) {
-                const change = ((newValue - oldValue) / oldValue) * 100;
+            const oldValue = stats?.[years[0]]?.[key];
+            const newValue = stats?.[years[1]]?.[key];
+            if (oldValue && oldValue > 0) {
+                const change = (((newValue ?? 0) - oldValue) / oldValue) * 100;
                 changes.push(change);
-            } else if (newValue > 0) {
+            } else if (newValue && newValue > 0) {
                 changes.push(200); // Cap "new" growth at 200% for a stable average
             }
         });
@@ -173,8 +173,8 @@ const ProjectSection: React.FC<{ project: Project }> = ({ project }) => {
                                     { !isSimpleView && years.length > 1 && (
                                         <td className="p-3 sm:p-4 text-center">
                                             <PerformanceIndicator 
-                                                oldValue={stats[years[0]][rowConfig.statKey] || 0} 
-                                                newValue={stats[years[1]][rowConfig.statKey] || 0} 
+                                                oldValue={stats?.[years[0]]?.[rowConfig.statKey] || 0} 
+                                                newValue={stats?.[years[1]]?.[rowConfig.statKey] || 0} 
                                             />
                                         </td>
                                     )}
