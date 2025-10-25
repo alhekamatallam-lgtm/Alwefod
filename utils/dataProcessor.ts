@@ -12,12 +12,6 @@ import type {
     YearlyStats,
 } from '../types';
 
-import UsersIcon from '../components/icons/UsersIcon';
-import HeartIcon from '../components/icons/HeartIcon';
-import GlobeIcon from '../components/icons/GlobeIcon';
-import GiftIcon from '../components/icons/GiftIcon';
-import DropletIcon from '../components/icons/DropletIcon';
-
 // --- HELPER FUNCTIONS ---
 const safeParseInt = (value: any): number => {
     const parsed = parseInt(String(value), 10);
@@ -103,7 +97,7 @@ const processWofoodData = (data: WofoodProjectData[]): Project => {
 
     return {
         name: 'مشروع وفود الحرم',
-        icon: UsersIcon,
+        icon: 'UsersIcon',
         stats: { ...yearlyStats, total },
         years: Object.keys(yearlyStats).sort(),
         statRows: [
@@ -125,7 +119,7 @@ const processWalakAlAjrData = (data: WalakAlAjrProjectData[]): Project => {
     };
     return {
         name: 'مشروع ولك الأجر',
-        icon: HeartIcon,
+        icon: 'HeartIcon',
         stats: { total: stats },
         years: [],
         statRows: [
@@ -147,7 +141,7 @@ const processTranslationData = (data: TranslationProjectData[]): Project => {
     };
      return {
         name: 'مشروع الإرشاد والترجمة',
-        icon: GlobeIcon,
+        icon: 'GlobeIcon',
         stats: { total: stats },
         years: [],
         statRows: [
@@ -167,7 +161,7 @@ const processIftarData = (data: IftarProjectData[], satisfactionData: IftarSatis
     };
     return {
         name: 'مشروع إفطار صائم',
-        icon: GiftIcon,
+        icon: 'GiftIcon',
         stats: { total: stats },
         years: [],
         statRows: [
@@ -186,7 +180,7 @@ const processSuqiaData = (data: SuqiaProjectData[], satisfactionData: SuqiaSatis
     };
     return {
         name: 'مشروع سقيا الماء',
-        icon: DropletIcon,
+        icon: 'DropletIcon',
         stats: { total: stats },
         years: [],
         statRows: [

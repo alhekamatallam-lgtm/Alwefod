@@ -1,4 +1,3 @@
-// Fix: Import React to provide the 'React' namespace for types like React.FC.
 import React from 'react';
 
 // Raw data from the "Wofood Al Haram" project sheet
@@ -113,5 +112,5 @@ export interface Project {
   stats: YearlyStats;
   years: string[];
   statRows: StatRowConfig[]; // This will drive the table rendering
-  icon?: React.FC<any>;
+  icon?: string;
 }

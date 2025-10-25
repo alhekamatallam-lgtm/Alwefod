@@ -3,6 +3,19 @@ import type { Project } from '../types';
 import ArrowUpIcon from './icons/ArrowUpIcon';
 import ArrowDownIcon from './icons/ArrowDownIcon';
 import ChevronDownIcon from './icons/ChevronDownIcon';
+import UsersIcon from './icons/UsersIcon';
+import HeartIcon from './icons/HeartIcon';
+import GlobeIcon from './icons/GlobeIcon';
+import GiftIcon from './icons/GiftIcon';
+import DropletIcon from './icons/DropletIcon';
+
+const ICONS: { [key: string]: React.FC<any> } = {
+    UsersIcon,
+    HeartIcon,
+    GlobeIcon,
+    GiftIcon,
+    DropletIcon,
+};
 
 const PerformanceIndicator = ({ oldValue, newValue }: { oldValue: number; newValue: number }) => {
     if (oldValue === 0) {
@@ -54,8 +67,10 @@ const formatValue = (statKey: string, value: number | undefined) => {
 
 const ProjectSection: React.FC<{ project: Project }> = ({ project }) => {
     const [isTableVisible, setIsTableVisible] = useState(false);
-    const { name, stats, years, statRows, icon: Icon } = project;
+    const { name, stats, years, statRows, icon } = project;
     const isSimpleView = years.length === 0;
+
+    const Icon = icon ? ICONS[icon] : null;
 
     const primaryStat = useMemo(() => {
         const primaryStatConfig = statRows[0];
