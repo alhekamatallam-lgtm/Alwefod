@@ -13,13 +13,10 @@ const WheelchairIcon: React.FC = () => (
     strokeLinejoin="round"
     className="h-6 w-6 text-brand-green-700"
   >
-    <path d="M12 12a5 5 0 1 0-10 0 5 5 0 1 0 10 0Z"/>
-    <path d="M19.34 16.34a2 2 0 1 0 2.32 2.32l-2.32-2.32Z"/>
-    <path d="M2 12h2.5"/>
-    <path d="M12 2v2.5"/>
-    <path d="m4.66 4.66 1.76 1.77"/>
-    <path d="M12 19.5V22"/>
-    <path d="m17.58 6.42-1.76 1.77"/>
+    <circle cx="9" cy="19" r="2"></circle>
+    <path d="M10 12.23V7a2 2 0 0 1 2-2h3.32a4 4 0 0 1 3.56 2.06l1.12 2.24a3 3 0 0 1 .15 1.15L20 16H8"></path>
+    <path d="M7 19h1"></path>
+    <path d="m15.1 12-3.4 3.4"></path>
   </svg>
 );
 

@@ -1,4 +1,5 @@
 import React from 'react';
+// Fix: Changed import path to be relative.
 import { ComparisonData, ComparisonStats } from '../types';
 import ArrowUpIcon from './icons/ArrowUpIcon';
 import ArrowDownIcon from './icons/ArrowDownIcon';

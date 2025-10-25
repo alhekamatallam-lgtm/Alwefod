@@ -1,4 +1,5 @@
 import React from 'react';
+// Fix: Changed import path to be relative.
 import { Partner } from '../types';
 
 interface PartnersSectionProps {

@@ -1,6 +1,3 @@
-import { ReactNode } from "react";
-
-// Basic data types from sheets
 export interface Partner {
   'الشريك': string;
   'الشعار': string;
@@ -10,72 +7,116 @@ export interface Logo {
   logo: string;
 }
 
+// Wofood Project
 export interface WofoodProjectRecord {
-  'اسم الوفد': string;
   'عدد الساعات': number;
   'عدد البرامج العلمية': number;
+  'اسم الوفد': string;
   'عدد المستفيدين': number;
 }
-
-export interface WalakAlAjerRawRecord {
-  'الساعات التطوعية للفترة الأولى': number;
-  'عدد الساعات التطوعية (الفترة الثانية)': number;
-  'عدد المستفيدين من الجنائز للفترة الثانية': number;
-  'عدد المستفيدين من الجنائز في الفترة الأولى': number;
-  'عدد المستفيدين من العربات في الفترة الأولى': number;
-  'عدد المستفيدين في العربات للفترة الثانية': number;
-  'عدد المستفيدين من التطيب في الفترة الأولى': number;
-  'عدد المستفيدين من الأساور للفترة الثانية': number;
-  'عدد المستفيدين في الأساور للفترة الأولى': number;
-}
-
-
-// Configuration for each project in the app
-export type ProjectType = 'comparison' | 'stats';
-export interface ProjectConfig {
-  name: string;
-  dataSourceUrl: string;
-  type: ProjectType;
-}
-
-// Processed stats for display
 export interface ComparisonStats {
-  enrichmentHours: number;
-  implementedPrograms: number;
-  implementedDelegations: number;
   totalBeneficiaries: number;
+  implementedDelegations: number;
+  implementedPrograms: number;
+  enrichmentHours: number;
 }
-
-export interface StatItem {
-    label: string;
-    value: number | string;
-    icon: ReactNode | string;
-}
-
-
-// Processed data structures for components
 export interface ComparisonData {
   stats2024: ComparisonStats;
   stats2025: ComparisonStats;
 }
 
-export interface StatsData {
-    stats: StatItem[];
+// Walak Al Ajer Project
+export interface WalakAlAjerRawRecord {
+    'الساعات التطوعية للفترة الأولى': number;
+    'عدد الساعات التطوعية (الفترة الثانية)': number;
+    'عدد المستفيدين من الجنائز للفترة الثانية': number;
+    'عدد المستفيدين من الجنائز في الفترة الأولى': number;
+    'عدد المستفيدين من العربات في الفترة الأولى': number;
+    'عدد المستفيدين في العربات للفترة الثانية': number;
+    'عدد المستفيدين من التطيب في الفترة الأولى': number;
+    'عدد المستفيدين من الأساور للفترة الثانية': number;
+    'عدد المستفيدين في الأساور للفترة الأولى': number;
 }
 
-export type ProcessedProjectData = ComparisonData | StatsData;
+// Iftar Project
+export interface IftarProjectRawRecord {
+    'اجمالي عدد العمال والمشرفين': number;
+    'عدد المشرفين': number;
+    'العـدد الكلي للوجبات؟': number;
+}
+export interface IftarSatisfactionRawRecord {
+    'ما مدى رضاك عن تعامل المشرف مع العمال والمستفيدين؟ ': number;
+    'ما مدى رضاك عن تعامل العمال مع المستفيدين؟': number;
+    'ما مدى رضاك عن مظهر فريق العمل ؟ ': number;
+    'ما مدى رضاك عن أداء فريق العمل أثناء التوزيـــع؟\n(فريق العمل : المشرفين - الموزعين أو العمال) ': number;
+    'ما مدى رضاك عن الوقت المستغرق  لتوزيع الوجبات؟': number;
+    'ما مدى رضاك عن مكان تقديم الخدمة ونظافته وتنظيمه؟': number;
+    'ما مدى رضاك عن نظافة المكان بعد الانتهاء من التوزيع؟': number;
+    'ما مدى رضاك عن وجبات الإفطار ؟': number;
+}
 
+// Suqia Project
+export interface SuqiaProjectRawRecord {
+    'عدد العمال': number;
+    'مكان توزيع سقيا الماء؟': string;
+    'كم العـدد الكلي للعبوات؟': number;
+    'عدد المشرفين': number;
+}
+export interface SuqiaSatisfactionRawRecord {
+    'ما مدى رضاك عن تواصل المشرف مع العمال والمستفيدين؟ ': number;
+    'ما مدى رضاك عن مظهر فريق العمل ؟ ': number;
+    'ما مدى رضاك عن تعامل العمال مع المستفيدين؟': number;
+    'ما مدى رضاك عن أداء فريق العمل أثناء التوزيـــع؟': number;
+    'ما مدى رضاك عن الوقت المستغرق في التوزيع؟': number;
+    'ما مدى رضاك عن مكان تقديم الخدمة ونظافته وتنظيمه؟': number;
+    'ما مدى رضاك عن عبـــوات المياه ؟': number;
+    'هل المياه مُبردة بشكل مناسب؟': number;
+}
+
+
+// Translation Project
+export interface TranslationProjectRawRecord {
+    'عدد الساعات التطوعية:': number;
+    'عدد الأسئلة؟': number;
+    'عدد المستفيدين:': number;
+    'ماهي اللغات المستخدمة في الترجمة؟': string;
+}
+
+// Generic Stat type
+export interface Stat {
+  icon: string;
+  label: string;
+  value: string | number;
+}
+export type StatsData = Stat[];
+
+// Project Configuration & Processed Data
+export type ProjectType = 'wofood' | 'walak-al-ajer' | 'iftar' | 'suqia' | 'translation';
+export interface ProjectConfig {
+    name: string;
+    type: ProjectType;
+    dataSourceUrl: string;
+    satisfactionDataSourceUrl?: string;
+}
 export interface ProcessedProject {
   name: string;
   type: ProjectType;
-  data?: ProcessedProjectData;
-  error?: string;
-  totalBeneficiaries?: number;
+  data: ComparisonData | StatsData | null;
+  error?: string | null;
 }
 
-// Main data structure for the dashboard
+// Summary Stats for Dashboard Header
+export interface SummaryStats {
+    overallSatisfaction: number;
+    totalProjects: number;
+    totalBeneficiaries: number;
+    totalVolunteerHours: number;
+}
+
+// Final Dashboard Data
 export interface DashboardData {
-  logoUrl: string;
-  partners: Partner[];
-  projects: ProcessedProject[];
+    logoUrl: string;
+    projects: ProcessedProject[];
+    partners: Partner[];
+    summaryStats?: SummaryStats;
 }

@@ -2,17 +2,55 @@ import { useState, useEffect } from 'react';
 import { 
     DashboardData, 
     Partner, 
-    Logo, 
-    ProjectConfig, 
     ProcessedProject, 
-    WofoodProjectRecord, 
-    ComparisonData, 
+    WofoodProjectRecord,
     WalakAlAjerRawRecord,
-    StatsData,
-    StatItem
+    IftarProjectRawRecord,
+    IftarSatisfactionRawRecord,
+    SuqiaProjectRawRecord,
+    SuqiaSatisfactionRawRecord,
+    TranslationProjectRawRecord,
+    Logo,
+    SummaryStats,
+    ComparisonData,
+    StatsData
 } from '../types';
-import { processWofoodProjectData, processWalakAlAjerData } from '../utils/dataProcessor';
-import { appConfig } from '../config/appConfig';
+import { 
+    PROJECTS_CONFIG, 
+    PARTNERS_DATA_URL 
+} from '../config/appConfig';
+import {
+    processWofoodProjectData,
+    processWalakAlAjerData,
+    processIftarProjectData,
+    processSuqiaProjectData,
+    processTranslationProjectData,
+} from '../utils/dataProcessor';
+
+// Helper function to fetch and parse JSON from a URL
+const fetchJson = async (url: string) => {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch from ${url}: ${response.statusText}`);
+    }
+    const json = await response.json();
+    if (!json.success || !json.data) {
+        throw new Error(`Invalid data structure from ${url}`);
+    }
+    return json.data;
+};
+
+// Helper to clean object keys (remove extra spaces)
+const cleanKeys = (records: any[]): any[] => {
+    return records.map(record => {
+        const newRecord: { [key: string]: any } = {};
+        for (const key in record) {
+            const cleanedKey = key.replace(/\s+/g, ' ').trim();
+            newRecord[cleanedKey] = record[key];
+        }
+        return newRecord;
+    });
+};
 
 const useDashboardData = () => {
     const [data, setData] = useState<DashboardData | null>(null);
@@ -22,93 +60,123 @@ const useDashboardData = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // 1. Fetch Logo and Partners
-                const logoPartnersResponse = await fetch(appConfig.logoAndPartnersUrl);
-                if (!logoPartnersResponse.ok) throw new Error(`Failed to fetch logo and partners`);
-                const logoPartnersData = await logoPartnersResponse.json();
-                const logoUrl = logoPartnersData.data.Logo[0]?.logo || '';
-                const partners = logoPartnersData.data.partenr || [];
+                const logoAndPartnersData = await fetchJson(PARTNERS_DATA_URL);
 
-                // 2. Fetch all projects concurrently
-                const projectPromises = appConfig.projects.map(async (projectConfig: ProjectConfig): Promise<ProcessedProject> => {
-                    try {
-                        const response = await fetch(projectConfig.dataSourceUrl);
-                        if (!response.ok) {
-                           throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        const projectData = await response.json();
-
-                        const cleanRecordKeys = (records: any[]): any[] => {
-                            if (!Array.isArray(records)) return [];
-                            return records.map(record => {
-                                const cleanedRecord: any = {};
-                                for (const key in record) {
-                                    // Trim whitespace from start/end and collapse multiple spaces inside to one
-                                    const cleanedKey = key.trim().replace(/\s+/g, ' ');
-                                    cleanedRecord[cleanedKey] = record[key];
+                const processedProjects: ProcessedProject[] = await Promise.all(
+                    PROJECTS_CONFIG.map(async (projectConfig): Promise<ProcessedProject> => {
+                        try {
+                            const mainData = await fetchJson(projectConfig.dataSourceUrl);
+                            
+                            let records = Array.isArray(mainData) ? mainData : Object.values(mainData).flat();
+                            
+                             if (projectConfig.type === 'wofood') {
+                                const cleanedData: { [key: string]: any[] } = {};
+                                for(const year in mainData) {
+                                    cleanedData[year] = cleanKeys(mainData[year]);
                                 }
-                                return cleanedRecord;
-                            });
-                        };
+                                records = cleanedData as any;
+                            } else {
+                                records = cleanKeys(records);
+                            }
 
-                        if (projectConfig.type === 'comparison' && projectData.data) {
-                            const rawData = projectData.data as { '2024': any[], '2025': any[] };
-                            
-                            const cleanedData = {
-                                '2024': cleanRecordKeys(rawData['2024']) as WofoodProjectRecord[],
-                                '2025': cleanRecordKeys(rawData['2025']) as WofoodProjectRecord[],
-                            };
-                            
-                            const processed = processWofoodProjectData(cleanedData);
-                            return { 
-                                name: projectConfig.name, 
-                                type: 'comparison', 
-                                data: processed,
-                                totalBeneficiaries: processed.stats2024.totalBeneficiaries + processed.stats2025.totalBeneficiaries
-                            };
-                        } else if (projectConfig.type === 'stats' && projectData.data) {
-                             const recordsObject = projectData.data as { [sheetName: string]: any[] };
-                             const firstSheetName = Object.keys(recordsObject)[0];
-                             if (!firstSheetName) throw new Error("No data sheets found");
+                            let processedData;
+                            switch (projectConfig.type) {
+                                case 'wofood':
+                                    processedData = processWofoodProjectData(records as unknown as { '2024': WofoodProjectRecord[], '2025': WofoodProjectRecord[] });
+                                    break;
+                                case 'walak-al-ajer':
+                                    processedData = processWalakAlAjerData(records as WalakAlAjerRawRecord[]);
+                                    break;
+                                case 'iftar':
+                                    let iftarSatisfactionRecords: IftarSatisfactionRawRecord[] = [];
+                                    if(projectConfig.satisfactionDataSourceUrl) {
+                                        const satisfactionData = await fetchJson(projectConfig.satisfactionDataSourceUrl);
+                                        const rawSatisfactionRecords = Array.isArray(satisfactionData) ? satisfactionData : Object.values(satisfactionData).flat();
+                                        iftarSatisfactionRecords = cleanKeys(rawSatisfactionRecords) as IftarSatisfactionRawRecord[];
+                                    }
+                                    processedData = processIftarProjectData(records as IftarProjectRawRecord[], iftarSatisfactionRecords);
+                                    break;
+                                case 'suqia':
+                                    let suqiaSatisfactionRecords: SuqiaSatisfactionRawRecord[] = [];
+                                    if(projectConfig.satisfactionDataSourceUrl) {
+                                        const satisfactionData = await fetchJson(projectConfig.satisfactionDataSourceUrl);
+                                        const rawSatisfactionRecords = Array.isArray(satisfactionData) ? satisfactionData : Object.values(satisfactionData).flat();
+                                        suqiaSatisfactionRecords = cleanKeys(rawSatisfactionRecords) as SuqiaSatisfactionRawRecord[];
+                                    }
+                                    processedData = processSuqiaProjectData(records as SuqiaProjectRawRecord[], suqiaSatisfactionRecords);
+                                    break;
+                                case 'translation':
+                                    processedData = processTranslationProjectData(records as TranslationProjectRawRecord[]);
+                                    break;
+                                default:
+                                    throw new Error(`Unknown project type: ${projectConfig.type}`);
+                            }
 
-                             const rawRecords = recordsObject[firstSheetName];
-                             if (!Array.isArray(rawRecords)) throw new Error("Data is not an array");
-
-                             const records = cleanRecordKeys(rawRecords) as WalakAlAjerRawRecord[];
-                             
-                             const processedData = processWalakAlAjerData(records);
-                             const totalBeneficiariesStat = processedData.stats.find(s => s.label === 'اجمالي المستفيدين');
-                             const totalBeneficiaries = totalBeneficiariesStat && typeof totalBeneficiariesStat.value === 'number' 
-                                  ? totalBeneficiariesStat.value 
-                                  : 0;
-
-                             return {
+                            return {
                                 name: projectConfig.name,
-                                type: 'stats',
+                                type: projectConfig.type,
                                 data: processedData,
-                                totalBeneficiaries: totalBeneficiaries
-                             }
+                            };
+                        } catch (e) {
+                            console.error(`Error processing project ${projectConfig.name}:`, e);
+                            return {
+                                name: projectConfig.name,
+                                type: projectConfig.type,
+                                data: null,
+                                error: (e instanceof Error ? e.message : 'Unknown error'),
+                            };
                         }
-                        
-                        throw new Error("Invalid project type or data structure");
+                    })
+                );
+                
+                // Calculate Summary Stats
+                let totalBeneficiaries = 0;
+                let totalVolunteerHours = 0;
+                const satisfactionScores: number[] = [];
 
-                    } catch (e) {
-                        console.error(`Failed to process project ${projectConfig.name}:`, e);
-                        return { 
-                            name: projectConfig.name, 
-                            type: projectConfig.type, 
-                            error: e instanceof Error ? e.message : 'Unknown error' 
-                        };
+                processedProjects.forEach(p => {
+                    if (p.data && !p.error) {
+                        if (p.type === 'wofood') {
+                            const d = p.data as ComparisonData;
+                            totalBeneficiaries += d.stats2024.totalBeneficiaries + d.stats2025.totalBeneficiaries;
+                        } else {
+                            const stats = p.data as StatsData;
+                            stats.forEach(stat => {
+                                if (stat.label.includes('المستفيدين')) {
+                                    totalBeneficiaries += Number(stat.value) || 0;
+                                }
+                                if (stat.label.includes('الساعات التطوعية')) {
+                                    totalVolunteerHours += Number(stat.value) || 0;
+                                }
+                                if (stat.label.includes('رضا المستفيدين') && typeof stat.value === 'string') {
+                                    satisfactionScores.push(parseFloat(stat.value));
+                                }
+                            });
+                        }
                     }
                 });
-
-                const projects = await Promise.all(projectPromises);
                 
-                setData({ logoUrl, partners, projects });
+                const overallSatisfaction = satisfactionScores.length > 0
+                    ? satisfactionScores.reduce((a, b) => a + b, 0) / satisfactionScores.length
+                    : 0;
 
-            } catch (e) {
-                console.error("Failed to fetch dashboard data:", e);
-                setError(e instanceof Error ? e : new Error('An unknown error occurred'));
+                const summaryStats: SummaryStats = {
+                    totalProjects: PROJECTS_CONFIG.length,
+                    totalBeneficiaries,
+                    totalVolunteerHours,
+                    overallSatisfaction,
+                };
+
+
+                setData({
+                    logoUrl: (logoAndPartnersData.Logo as Logo[])[0].logo,
+                    partners: logoAndPartnersData.partenr as Partner[],
+                    projects: processedProjects,
+                    summaryStats,
+                });
+
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('An unknown error occurred'));
             } finally {
                 setLoading(false);
             }

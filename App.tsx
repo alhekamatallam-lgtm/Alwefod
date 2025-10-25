@@ -1,8 +1,10 @@
 import React from 'react';
+// Fix: Changed import path to be relative.
 import useDashboardData from './hooks/useDashboardData';
 import LoadingSpinner from './components/LoadingSpinner';
 import PartnersSection from './components/PartnersSection';
 import ProjectSection from './components/ProjectSection';
+import DashboardHeader from './components/DashboardHeader';
 
 const App: React.FC = () => {
   const { data, loading, error } = useDashboardData();
@@ -47,14 +49,7 @@ const App: React.FC = () => {
         </header>
         
         <main className="flex-grow container mx-auto px-4 py-12 space-y-16">
-            <div className="text-center">
-                <h1 className="text-4xl sm:text-5xl font-extrabold text-brand-green-900 tracking-tight">
-                    لوحة منجزات وفود الحرم
-                </h1>
-                <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
-                    نحو خدمة متكاملة ومستدامة لضيوف الرحمن
-                </p>
-            </div>
+            {data.summaryStats && <DashboardHeader stats={data.summaryStats} />}
             
             {data.projects && data.projects.length > 0 && <ProjectSection projects={data.projects} />}
 

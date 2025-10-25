@@ -4,6 +4,14 @@ import BriefcaseIcon from './icons/BriefcaseIcon';
 import GiftIcon from './icons/GiftIcon';
 import HeartIcon from './icons/HeartIcon';
 import UsersIcon from './icons/UsersIcon';
+import FoodIcon from './icons/FoodIcon';
+import DropletIcon from './icons/DropletIcon';
+import WheelchairIcon from './icons/WheelchairIcon';
+import IncenseBurnerIcon from './icons/IncenseBurnerIcon';
+import WristbandIcon from './icons/WristbandIcon';
+import GlobeIcon from './icons/GlobeIcon';
+import HourglassIcon from './icons/HourglassIcon';
+
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -17,6 +25,13 @@ const iconMap: { [key: string]: React.ReactNode } = {
     'GiftIcon': <GiftIcon />,
     'HeartIcon': <HeartIcon />,
     'BookOpenIcon': <BookOpenIcon />,
+    'FoodIcon': <FoodIcon />,
+    'DropletIcon': <DropletIcon />,
+    'WheelchairIcon': <WheelchairIcon />,
+    'IncenseBurnerIcon': <IncenseBurnerIcon />,
+    'WristbandIcon': <WristbandIcon />,
+    'GlobeIcon': <GlobeIcon />,
+    'HourglassIcon': <HourglassIcon />,
 };
 
 

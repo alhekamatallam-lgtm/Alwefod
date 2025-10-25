@@ -1,37 +1,25 @@
 import React from 'react';
+// Fix: Changed import path to be relative.
 import { StatsData } from '../types';
 import StatCard from './StatCard';
-import UsersIcon from './icons/UsersIcon';
-import BriefcaseIcon from './icons/BriefcaseIcon';
-import GiftIcon from './icons/GiftIcon';
-import HeartIcon from './icons/HeartIcon';
-import BookOpenIcon from './icons/BookOpenIcon';
-import WheelchairIcon from './icons/WheelchairIcon';
-
-const iconMap: { [key: string]: React.ReactNode } = {
-  'UsersIcon': <UsersIcon />,
-  'BriefcaseIcon': <BriefcaseIcon />,
-  'GiftIcon': <GiftIcon />,
-  'HeartIcon': <HeartIcon />,
-  'BookOpenIcon': <BookOpenIcon />,
-  'WheelchairIcon': <WheelchairIcon />,
-};
 
 interface ProjectStatsDisplayProps {
   data: StatsData;
 }
 
 const ProjectStatsDisplay: React.FC<ProjectStatsDisplayProps> = ({ data }) => {
-  if (!data || !data.stats) return null;
+  if (!data || data.length === 0) {
+    return <p className="text-gray-500">لا توجد إحصائيات لعرضها.</p>;
+  }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {data.stats.map((item) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {data.map((stat, index) => (
         <StatCard 
-          key={item.label} 
-          icon={typeof item.icon === 'string' ? iconMap[item.icon] : item.icon} 
-          label={item.label} 
-          value={item.value} 
+          key={index}
+          icon={stat.icon}
+          label={stat.label}
+          value={stat.value}
         />
       ))}
     </div>
