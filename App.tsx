@@ -56,7 +56,7 @@ const App: React.FC = () => {
                 </p>
             </div>
             
-            {data.projectData && <ProjectSection data={data.projectData} />}
+            {data.projects && data.projects.length > 0 && <ProjectSection projects={data.projects} />}
 
         </main>
 

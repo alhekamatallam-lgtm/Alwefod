@@ -1,45 +1,81 @@
-// Represents a partner from the API
+import { ReactNode } from "react";
+
+// Basic data types from sheets
 export interface Partner {
-  "الشريك": string;
-  "الشعار": string;
+  'الشريك': string;
+  'الشعار': string;
 }
 
-// Represents the main logo from the API
 export interface Logo {
   logo: string;
 }
 
-// Represents the structure of the data property in the main API response
-export interface ApiData {
-  Logo: Logo[];
-  partenr: Partner[];
+export interface WofoodProjectRecord {
+  'اسم الوفد': string;
+  'عدد الساعات': number;
+  'عدد البرامج العلمية': number;
+  'عدد المستفيدين': number;
 }
 
-// Represents a single record from the project data source
-export interface ProjectRecord {
-    "عدد الساعات": number;
-    "عدد البرامج العلمية": number;
-    "اسم الوفد": string;
-    "عدد المستفيدين": number;
+export interface WalakAlAjerRawRecord {
+  'الساعات التطوعية للفترة الأولى': number;
+  'عدد الساعات التطوعية (الفترة الثانية)': number;
+  'عدد المستفيدين من الجنائز للفترة الثانية': number;
+  'عدد المستفيدين من الجنائز في الفترة الأولى': number;
+  'عدد المستفيدين من العربات في الفترة الأولى': number;
+  'عدد المستفيدين في العربات للفترة الثانية': number;
+  'عدد المستفيدين من التطيب في الفترة الأولى': number;
+  'عدد المستفيدين من الأساور للفترة الثانية': number;
+  'عدد المستفيدين في الأساور للفترة الأولى': number;
 }
 
-// Represents the raw data from the project API, with keys for each year/sheet
-export interface ProjectApiData {
-    [key: string]: ProjectRecord[];
+
+// Configuration for each project in the app
+export type ProjectType = 'comparison' | 'stats';
+export interface ProjectConfig {
+  name: string;
+  dataSourceUrl: string;
+  type: ProjectType;
 }
 
-// Represents the calculated statistics for a project
-export interface ProjectStats {
-    enrichmentHours: number;
-    implementedPrograms: number;
-    implementedDelegations: number;
-
-    totalBeneficiaries: number;
+// Processed stats for display
+export interface ComparisonStats {
+  enrichmentHours: number;
+  implementedPrograms: number;
+  implementedDelegations: number;
+  totalBeneficiaries: number;
 }
 
-// Represents the final processed data used by the components
+export interface StatItem {
+    label: string;
+    value: number | string;
+    icon: ReactNode | string;
+}
+
+
+// Processed data structures for components
+export interface ComparisonData {
+  stats2024: ComparisonStats;
+  stats2025: ComparisonStats;
+}
+
+export interface StatsData {
+    stats: StatItem[];
+}
+
+export type ProcessedProjectData = ComparisonData | StatsData;
+
+export interface ProcessedProject {
+  name: string;
+  type: ProjectType;
+  data?: ProcessedProjectData;
+  error?: string;
+  totalBeneficiaries?: number;
+}
+
+// Main data structure for the dashboard
 export interface DashboardData {
   logoUrl: string;
   partners: Partner[];
-  projectData?: ProjectApiData; // Changed from projectStats to allow for dynamic filtering
+  projects: ProcessedProject[];
 }

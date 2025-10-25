@@ -1,96 +1,123 @@
 import { useState, useEffect } from 'react';
-import { DashboardData, ApiData, ProjectApiData, ProjectRecord } from '../types';
-
-const MAIN_API_URL = 'https://script.google.com/macros/s/AKfycbwJDAo__-e6gGzzkOLK3CZJnxoertGEXyJ08hoEFHLsvvBglXFgQ1JE6X2B-NYjBPjnPA/exec';
-const PROJECT_API_URL = 'https://script.google.com/macros/s/AKfycbyGAXoa3UU3WycERQ8CN7F_zaFBmFaeD0MfTwovFRl7J9n-6XTk1qu1AinxT9wRf9cg/exec';
-
+import { 
+    DashboardData, 
+    Partner, 
+    Logo, 
+    ProjectConfig, 
+    ProcessedProject, 
+    WofoodProjectRecord, 
+    ComparisonData, 
+    WalakAlAjerRawRecord,
+    StatsData,
+    StatItem
+} from '../types';
+import { processWofoodProjectData, processWalakAlAjerData } from '../utils/dataProcessor';
+import { appConfig } from '../config/appConfig';
 
 const useDashboardData = () => {
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
+    const [data, setData] = useState<DashboardData | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // 1. Fetch Logo and Partners
+                const logoPartnersResponse = await fetch(appConfig.logoAndPartnersUrl);
+                if (!logoPartnersResponse.ok) throw new Error(`Failed to fetch logo and partners`);
+                const logoPartnersData = await logoPartnersResponse.json();
+                const logoUrl = logoPartnersData.data.Logo[0]?.logo || '';
+                const partners = logoPartnersData.data.partenr || [];
 
-        // Fetch main data (logo and partners)
-        const mainResponse = await fetch(MAIN_API_URL);
-        if (!mainResponse.ok) {
-          throw new Error(`فشل الاتصال بمصدر البيانات الرئيسي: ${mainResponse.status} ${mainResponse.statusText}`);
-        }
+                // 2. Fetch all projects concurrently
+                const projectPromises = appConfig.projects.map(async (projectConfig: ProjectConfig): Promise<ProcessedProject> => {
+                    try {
+                        const response = await fetch(projectConfig.dataSourceUrl);
+                        if (!response.ok) {
+                           throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        const projectData = await response.json();
 
-        const mainJsonResponse = await mainResponse.json();
-        
-        if (!mainJsonResponse.success || !mainJsonResponse.data) {
-            throw new Error('استجابة مصدر البيانات الرئيسي غير صالحة.');
-        }
+                        const cleanRecordKeys = (records: any[]): any[] => {
+                            if (!Array.isArray(records)) return [];
+                            return records.map(record => {
+                                const cleanedRecord: any = {};
+                                for (const key in record) {
+                                    // Trim whitespace from start/end and collapse multiple spaces inside to one
+                                    const cleanedKey = key.trim().replace(/\s+/g, ' ');
+                                    cleanedRecord[cleanedKey] = record[key];
+                                }
+                                return cleanedRecord;
+                            });
+                        };
 
-        const mainApiData: ApiData = mainJsonResponse.data;
+                        if (projectConfig.type === 'comparison' && projectData.data) {
+                            const rawData = projectData.data as { '2024': any[], '2025': any[] };
+                            
+                            const cleanedData = {
+                                '2024': cleanRecordKeys(rawData['2024']) as WofoodProjectRecord[],
+                                '2025': cleanRecordKeys(rawData['2025']) as WofoodProjectRecord[],
+                            };
+                            
+                            const processed = processWofoodProjectData(cleanedData);
+                            return { 
+                                name: projectConfig.name, 
+                                type: 'comparison', 
+                                data: processed,
+                                totalBeneficiaries: processed.stats2024.totalBeneficiaries + processed.stats2025.totalBeneficiaries
+                            };
+                        } else if (projectConfig.type === 'stats' && projectData.data) {
+                             const recordsObject = projectData.data as { [sheetName: string]: any[] };
+                             const firstSheetName = Object.keys(recordsObject)[0];
+                             if (!firstSheetName) throw new Error("No data sheets found");
 
-        if (!mainApiData.Logo || mainApiData.Logo.length === 0 || !mainApiData.Logo[0].logo) {
-            throw new Error('بيانات الشعار مفقودة من مصدر البيانات.');
-        }
+                             const rawRecords = recordsObject[firstSheetName];
+                             if (!Array.isArray(rawRecords)) throw new Error("Data is not an array");
 
-        let processedData: DashboardData = {
-          logoUrl: mainApiData.Logo[0].logo,
-          partners: mainApiData.partenr || [],
+                             const records = cleanRecordKeys(rawRecords) as WalakAlAjerRawRecord[];
+                             
+                             const processedData = processWalakAlAjerData(records);
+                             const totalBeneficiariesStat = processedData.stats.find(s => s.label === 'اجمالي المستفيدين');
+                             const totalBeneficiaries = totalBeneficiariesStat && typeof totalBeneficiariesStat.value === 'number' 
+                                  ? totalBeneficiariesStat.value 
+                                  : 0;
+
+                             return {
+                                name: projectConfig.name,
+                                type: 'stats',
+                                data: processedData,
+                                totalBeneficiaries: totalBeneficiaries
+                             }
+                        }
+                        
+                        throw new Error("Invalid project type or data structure");
+
+                    } catch (e) {
+                        console.error(`Failed to process project ${projectConfig.name}:`, e);
+                        return { 
+                            name: projectConfig.name, 
+                            type: projectConfig.type, 
+                            error: e instanceof Error ? e.message : 'Unknown error' 
+                        };
+                    }
+                });
+
+                const projects = await Promise.all(projectPromises);
+                
+                setData({ logoUrl, partners, projects });
+
+            } catch (e) {
+                console.error("Failed to fetch dashboard data:", e);
+                setError(e instanceof Error ? e : new Error('An unknown error occurred'));
+            } finally {
+                setLoading(false);
+            }
         };
 
-        // Fetch project data and pass it raw
-        try {
-          const projectResponse = await fetch(PROJECT_API_URL);
-          if (projectResponse.ok) {
-            const projectJsonResponse = await projectResponse.json();
-            if (projectJsonResponse.success && projectJsonResponse.data) {
-              const projectApiData: ProjectApiData = projectJsonResponse.data;
-              
-              // Smartly clean the keys from trailing/leading spaces
-              const cleanedProjectData: ProjectApiData = {};
-              for (const key in projectApiData) {
-                if (Object.prototype.hasOwnProperty.call(projectApiData, key)) {
-                  cleanedProjectData[key] = projectApiData[key].map(record => {
-                    const cleanedRecord: { [key: string]: any } = {};
-                    for (const recordKey in record) {
-                      if (Object.prototype.hasOwnProperty.call(record, recordKey)) {
-                        cleanedRecord[recordKey.trim()] = record[recordKey as keyof typeof record];
-                      }
-                    }
-                    return cleanedRecord as ProjectRecord;
-                  });
-                }
-              }
-              
-              processedData.projectData = cleanedProjectData; // Pass cleaned data
-            } else {
-              console.error('Project API response was not successful or data is missing:', projectJsonResponse);
-            }
-          } else {
-            console.error(`Failed to fetch project data: ${projectResponse.status} ${projectResponse.statusText}`);
-          }
-        } catch (projectError) {
-          console.error('An error occurred while fetching or processing project data:', projectError);
-        }
+        fetchData();
+    }, []);
 
-        setData(processedData);
-
-      } catch (err) {
-        if (err instanceof Error) {
-            setError(err);
-        } else {
-            setError(new Error('حدث خطأ غير معروف أثناء جلب البيانات.'));
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  return { data, loading, error };
+    return { data, loading, error };
 };
 
 export default useDashboardData;
