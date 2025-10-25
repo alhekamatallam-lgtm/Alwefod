@@ -1,50 +1,35 @@
 import React from 'react';
-import type { Partner } from '../types';
+import { Partner } from '../types';
 
 interface PartnersSectionProps {
-    partners: Partner[];
-    loading: boolean;
+  partners: Partner[];
 }
 
-const PartnersSectionSkeleton: React.FC = () => (
-    <div className="text-center mt-16 animate-pulse">
-        <div className="h-8 bg-gray-200 rounded-md w-1/3 mx-auto mb-8"></div>
-        <div className="flex justify-center items-center flex-wrap gap-x-12 gap-y-8">
-            {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-20 w-32 bg-gray-200 rounded-lg"></div>
-            ))}
-        </div>
-    </div>
-);
+const PartnersSection: React.FC<PartnersSectionProps> = ({ partners }) => {
+  if (!partners || partners.length === 0) {
+    return null;
+  }
 
-const PartnersSection: React.FC<PartnersSectionProps> = ({ partners, loading }) => {
-    if (loading) {
-        return <PartnersSectionSkeleton />;
-    }
-    
-    // Filter out any partners that are missing essential data to prevent rendering errors.
-    const validPartners = partners.filter(p => p && p.الشريك && p.الشعار);
-
-    if (validPartners.length === 0) {
-        return null;
-    }
-
-    return (
-        <section className="text-center mt-16 max-w-5xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-700 mb-8">شركاء النجاح</h2>
-            <div className="flex justify-center items-center flex-wrap gap-x-8 sm:gap-x-12 md:gap-x-16 gap-y-8">
-                {validPartners.map((partner) => (
-                    <div key={partner.الشريك} className="group">
-                         <img 
-                            src={partner.الشعار} 
-                            alt={`شعار ${partner.الشريك}`} 
-                            className="h-16 sm:h-20 max-w-[120px] sm:max-w-[150px] object-contain filter grayscale transition-all duration-300 group-hover:grayscale-0 group-hover:scale-110"
-                            />
-                    </div>
-                ))}
+  return (
+    <footer className="bg-white py-16 px-4 sm:px-6 lg:px-8 mt-auto border-t">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-3xl font-bold text-center text-brand-green-800 mb-12">
+          شركاء النجاح
+        </h2>
+        <div className="flex flex-row flex-wrap justify-center items-center gap-x-12 sm:gap-x-16 gap-y-8">
+          {partners.map((partner) => (
+            <div key={partner['الشريك']} title={partner['الشريك']} className="flex justify-center">
+              <img 
+                src={partner['الشعار']} 
+                alt={partner['الشريك']} 
+                className="max-h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 ease-in-out cursor-pointer" 
+              />
             </div>
-        </section>
-    );
+          ))}
+        </div>
+      </div>
+    </footer>
+  );
 };
 
 export default PartnersSection;

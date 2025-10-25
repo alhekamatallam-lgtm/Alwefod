@@ -1,72 +1,68 @@
 import React from 'react';
 import useDashboardData from './hooks/useDashboardData';
 import LoadingSpinner from './components/LoadingSpinner';
-import DashboardHeader from './components/DashboardHeader';
-import ProjectSection from './components/ProjectSection';
 import PartnersSection from './components/PartnersSection';
 
 const App: React.FC = () => {
-  const { 
-    loading, 
-    logoUrl, 
-    headerStats,
-    projects,
-    partners,
-    error 
-  } = useDashboardData();
+  const { data, loading, error } = useDashboardData();
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-red-50 p-4">
-        <div className="text-center bg-white p-8 rounded-lg shadow-md border-2 border-red-200">
-          <h2 className="text-2xl font-bold text-red-800 mb-2">حدث خطأ فادح</h2>
-          <p className="text-red-700">{error}</p>
-          <p className="mt-4 text-gray-600">يرجى التأكد من أن مصدر البيانات يعمل بشكل صحيح.</p>
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+          <LoadingSpinner />
         </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-red-50 text-red-800 p-6" role="alert">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">حدث خطأ فني</h2>
+            <p>تعذر تحميل بيانات لوحة التحكم. الرجاء المحاولة مرة أخرى لاحقاً.</p>
+            <p className="mt-4 text-sm text-red-600 font-mono bg-red-100 p-2 rounded">
+              Error details: {error.message}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (!data) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-gray-500">لا توجد بيانات متاحة لعرضها.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
+        <header className="bg-white shadow-sm py-5 px-4 sm:px-6 lg:px-8 border-b-4 border-brand-green-700">
+          <div className="max-w-5xl mx-auto flex justify-center items-center">
+            <img src={data.logoUrl} alt="شعار جمعية وفود الحرم" className="h-28 w-auto object-contain" />
+          </div>
+        </header>
+        
+        <main className="flex-grow container mx-auto px-4 py-12">
+            <div className="text-center">
+                <h1 className="text-4xl sm:text-5xl font-extrabold text-brand-green-900 tracking-tight">
+                    لوحة منجزات وفود الحرم
+                </h1>
+                <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
+                    نحو خدمة متكاملة ومستدامة لضيوف الرحمن
+                </p>
+            </div>
+            {/* The main content for projects will be added here in the future */}
+        </main>
+
+        <PartnersSection partners={data.partners} />
       </div>
     );
-  }
+  };
 
-  return (
-    <div className="min-h-screen bg-brand-green-50/70 font-sans p-4 sm:p-6 lg:p-8">
-      <header className="max-w-5xl mx-auto mb-8 text-center">
-        {logoUrl && (
-          <img 
-            src={logoUrl} 
-            alt="شعار وفود الحرم" 
-            className="mx-auto h-24 sm:h-28 object-contain transition-transform duration-300 hover:scale-105"
-          />
-        )}
-      </header>
-
-      <main>
-        <DashboardHeader 
-          totalBeneficiaries={headerStats.totalBeneficiaries}
-          projectCount={headerStats.projectCount}
-          overallSatisfaction={headerStats.overallSatisfaction}
-          loading={loading}
-        />
-        
-        <div className="space-y-6 sm:space-y-8">
-          {projects.map(project => (
-            <ProjectSection key={project.name} project={project} />
-          ))}
-        </div>
-
-        <PartnersSection partners={partners} loading={loading} />
-      </main>
-
-       <footer className="text-center mt-12 py-4">
-          <p className="text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} جمعية وفود الحرم. جميع الحقوق محفوظة.
-          </p>
-        </footer>
-    </div>
-  );
+  return renderContent();
 };
 
 export default App;

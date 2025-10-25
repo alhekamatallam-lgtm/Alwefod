@@ -1,64 +1,58 @@
 import { useState, useEffect } from 'react';
-import { MOCK_API_DATA } from '../utils/mockData';
-import { processDashboardData } from '../utils/dataProcessor';
-import type { Project, Partner } from '../types';
+import { DashboardData, ApiData } from '../types';
 
-interface HeaderStats {
-    totalBeneficiaries: number;
-    projectCount: number;
-    overallSatisfaction: number;
-}
-
-const LOGO_API_URL = 'https://script.google.com/macros/s/AKfycbzw846YftubKOJoi_Rj_keXEo8Sd3aEFeE89emw-zneoJWAs8UdI7QIpNwuQ08EP-7JZg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwJDAo__-e6gGzzkOLK3CZJnxoertGEXyJ08hoEFHLsvvBglXFgQ1JE6X2B-NYjBPjnPA/exec';
 
 const useDashboardData = () => {
-    const [loading, setLoading] = useState(true);
-    const [logoUrl, setLogoUrl] = useState<string>('');
-    const [headerStats, setHeaderStats] = useState<HeaderStats>({ totalBeneficiaries: 0, projectCount: 0, overallSatisfaction: 0 });
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [partners, setPartners] = useState<Partner[]>([]);
-    const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
 
-    useEffect(() => {
-        const loadData = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                // Step 1: Fetch the live logo
-                const response = await fetch(LOGO_API_URL);
-                if (!response.ok) {
-                    throw new Error(`فشل الاتصال بمصدر الشعار. الحالة: ${response.status}`);
-                }
-                const logoData = await response.json();
-                
-                // Extract logo URL based on the exact structure provided
-                const url = logoData?.data?.Logo?.[0]?.logo;
-                if (typeof url === 'string' && url.length > 0) {
-                    setLogoUrl(url);
-                } else {
-                    // This is a critical failure as per the user's request.
-                    throw new Error("لم يتم العثور على رابط الشعار بالهيكلية المتوقعة في استجابة قاعدة البيانات.");
-                }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-                // Step 2: Process the stable mock data for the rest of the dashboard
-                // This ensures the dashboard UI is fully functional while testing the live logo connection.
-                const processedData = processDashboardData(MOCK_API_DATA);
-                setHeaderStats(processedData.headerStats);
-                setProjects(processedData.projects);
-                setPartners(processedData.partners);
-                
-            } catch (err: any) {
-                console.error("فشل في جلب أو معالجة البيانات:", err);
-                setError(err.message || 'حدث خطأ غير معروف.');
-            } finally {
-                setLoading(false);
-            }
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+          throw new Error(`فشل الاتصال بمصدر البيانات: ${response.status} ${response.statusText}`);
+        }
+
+        const jsonResponse = await response.json();
+        
+        if (!jsonResponse.success || !jsonResponse.data) {
+            throw new Error('استجابة مصدر البيانات غير صالحة.');
+        }
+
+        const apiData: ApiData = jsonResponse.data;
+
+        if (!apiData.Logo || apiData.Logo.length === 0 || !apiData.Logo[0].logo) {
+            throw new Error('بيانات الشعار مفقودة من مصدر البيانات.');
+        }
+
+        const processedData: DashboardData = {
+          logoUrl: apiData.Logo[0].logo,
+          partners: apiData.partenr || [],
         };
 
-        loadData();
-    }, []);
+        setData(processedData);
 
-    return { loading, logoUrl, headerStats, projects, partners, error };
+      } catch (err) {
+        if (err instanceof Error) {
+            setError(err);
+        } else {
+            setError(new Error('حدث خطأ غير معروف أثناء جلب البيانات.'));
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return { data, loading, error };
 };
 
 export default useDashboardData;
