@@ -161,7 +161,7 @@ const processTranslationData = (data: TranslationProjectData[]): Project => {
 
 const processIftarData = (data: IftarProjectData[], satisfactionData: IftarSatisfactionData[]): Project => {
     const stats = {
-        mealsServed: data.reduce((sum, item) => sum + safeParseInt(item["العـدد الكلي للوجبات؟"]), 0),
+        beneficiaries: data.reduce((sum, item) => sum + safeParseInt(item["العـدد الكلي للوجبات؟"]), 0),
         lowCalorieMeals: data.reduce((sum, item) => sum + safeParseInt(item["عـدد الوجبات ذات السعرات الحرارية المُنخفضة؟"]), 0),
         satisfactionPercentage: calculateSatisfaction(satisfactionData, ["ما مدى رضاك عن تعامل المشرف مع العمال والمستفيدين؟ ", "ما مدى رضاك عن تعامل العمال مع المستفيدين؟", "ما مدى رضاك عن مظهر فريق العمل ؟ ", "ما مدى رضاك عن أداء فريق العمل أثناء التوزيـــع؟\n(فريق العمل : المشرفين - الموزعين أو العمال) ", "ما مدى رضاك عن الوقت المستغرق  لتوزيع الوجبات؟", "ما مدى رضاك عن مكان تقديم الخدمة ونظافته وتنظيمه؟", "ما مدى رضاك عن نظافة المكان بعد الانتهاء من التوزيع؟", "ما مدى رضاك عن وجبات الإفطار ؟"]),
     };
@@ -171,7 +171,7 @@ const processIftarData = (data: IftarProjectData[], satisfactionData: IftarSatis
         stats: { total: stats },
         years: [],
         statRows: [
-            { label: 'عدد الوجبات الموزعة', statKey: 'mealsServed' },
+            { label: 'عدد الوجبات الموزعة', statKey: 'beneficiaries' },
             { label: 'وجبات منخفضة السعرات', statKey: 'lowCalorieMeals' },
             { label: 'مؤشر رضا المستفيدين', statKey: 'satisfactionPercentage' },
         ]

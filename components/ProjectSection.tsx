@@ -158,8 +158,8 @@ const ProjectSection: React.FC<{ project: Project }> = ({ project }) => {
                                     { !isSimpleView && years.length > 1 && (
                                         <td className="p-3 sm:p-4 text-center">
                                             <PerformanceIndicator 
-                                                oldValue={stats[years[0]][rowConfig.statKey]} 
-                                                newValue={stats[years[1]][rowConfig.statKey]} 
+                                                oldValue={stats[years[0]][rowConfig.statKey] || 0} 
+                                                newValue={stats[years[1]][rowConfig.statKey] || 0} 
                                             />
                                         </td>
                                     )}
