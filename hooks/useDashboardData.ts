@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import type { Project, Partner } from '../types';
 import { MOCK_API_DATA } from '../utils/mockData';
 import { processDashboardData } from '../utils/dataProcessor';
+import type { Project, Partner } from '../types';
 
 interface HeaderStats {
     totalBeneficiaries: number;
@@ -9,45 +9,56 @@ interface HeaderStats {
     overallSatisfaction: number;
 }
 
+const LOGO_API_URL = 'https://script.google.com/macros/s/AKfycbzw846YftubKOJoi_Rj_keXEo8Sd3aEFeE89emw-zneoJWAs8UdI7QIpNwuQ08EP-7JZg/exec';
+
 const useDashboardData = () => {
     const [loading, setLoading] = useState(true);
+    const [logoUrl, setLogoUrl] = useState<string>('');
+    const [headerStats, setHeaderStats] = useState<HeaderStats>({ totalBeneficiaries: 0, projectCount: 0, overallSatisfaction: 0 });
     const [projects, setProjects] = useState<Project[]>([]);
     const [partners, setPartners] = useState<Partner[]>([]);
-    const [logoUrl, setLogoUrl] = useState<string>('');
-    const [headerStats, setHeaderStats] = useState<HeaderStats>({
-        totalBeneficiaries: 0,
-        projectCount: 0,
-        overallSatisfaction: 0,
-    });
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchData = () => {
-            // Simulate API call delay to mimic real-world loading
-            setTimeout(() => {
-                try {
-                    // Extract the logo URL directly from the mock data source
-                    const logo = MOCK_API_DATA.logo?.[0]?.logo || '';
-                    setLogoUrl(logo);
-
-                    // Process the rest of the data for subsequent steps
-                    const { projects, partners, headerStats } = processDashboardData(MOCK_API_DATA);
-                    setProjects(projects);
-                    setPartners(partners);
-                    setHeaderStats(headerStats);
-
-                } catch (error) {
-                    console.error("Failed to process mock data:", error);
-                    // In case of an error, ensure the app doesn't stay in a loading state
-                } finally {
-                    setLoading(false);
+        const loadData = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                // Step 1: Fetch the live logo
+                const response = await fetch(LOGO_API_URL);
+                if (!response.ok) {
+                    throw new Error(`فشل الاتصال بمصدر الشعار. الحالة: ${response.status}`);
                 }
-            }, 1000); // 1-second delay for visual confirmation of the loading spinner
+                const logoData = await response.json();
+                
+                // Extract logo URL based on the exact structure provided
+                const url = logoData?.data?.Logo?.[0]?.logo;
+                if (typeof url === 'string' && url.length > 0) {
+                    setLogoUrl(url);
+                } else {
+                    // This is a critical failure as per the user's request.
+                    throw new Error("لم يتم العثور على رابط الشعار بالهيكلية المتوقعة في استجابة قاعدة البيانات.");
+                }
+
+                // Step 2: Process the stable mock data for the rest of the dashboard
+                // This ensures the dashboard UI is fully functional while testing the live logo connection.
+                const processedData = processDashboardData(MOCK_API_DATA);
+                setHeaderStats(processedData.headerStats);
+                setProjects(processedData.projects);
+                setPartners(processedData.partners);
+                
+            } catch (err: any) {
+                console.error("فشل في جلب أو معالجة البيانات:", err);
+                setError(err.message || 'حدث خطأ غير معروف.');
+            } finally {
+                setLoading(false);
+            }
         };
 
-        fetchData();
+        loadData();
     }, []);
 
-    return { loading, projects, partners, headerStats, logoUrl };
+    return { loading, logoUrl, headerStats, projects, partners, error };
 };
 
 export default useDashboardData;
