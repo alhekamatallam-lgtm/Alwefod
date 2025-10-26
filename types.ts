@@ -14,6 +14,8 @@ export interface WofoodProjectRecord {
   'اسم الوفد': string;
   'عدد المستفيدين': number;
 }
+
+// Fix: Add missing types for ProjectComparison component.
 export interface ComparisonStats {
   totalBeneficiaries: number;
   implementedDelegations: number;
@@ -101,7 +103,7 @@ export interface ProjectConfig {
 export interface ProcessedProject {
   name: string;
   type: ProjectType;
-  data: ComparisonData | StatsData | null;
+  data: StatsData | null;
   error?: string | null;
 }
 

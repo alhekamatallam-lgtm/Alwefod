@@ -12,7 +12,6 @@ import {
     TranslationProjectRawRecord,
     Logo,
     SummaryStats,
-    ComparisonData,
     StatsData
 } from '../types';
 import { 
@@ -106,7 +105,7 @@ const useDashboardData = () => {
                                     processedData = processSuqiaProjectData(records as SuqiaProjectRawRecord[], suqiaSatisfactionRecords);
                                     break;
                                 case 'translation':
-                                    processedData = processTranslationProjectData(records as TranslationProjectRawRecord[]);
+                                    processedData = processTranslationProjectData(records);
                                     break;
                                 default:
                                     throw new Error(`Unknown project type: ${projectConfig.type}`);
@@ -136,23 +135,18 @@ const useDashboardData = () => {
 
                 processedProjects.forEach(p => {
                     if (p.data && !p.error) {
-                        if (p.type === 'wofood') {
-                            const d = p.data as ComparisonData;
-                            totalBeneficiaries += d.stats2024.totalBeneficiaries + d.stats2025.totalBeneficiaries;
-                        } else {
-                            const stats = p.data as StatsData;
-                            stats.forEach(stat => {
-                                if (stat.label.includes('المستفيدين')) {
-                                    totalBeneficiaries += Number(stat.value) || 0;
-                                }
-                                if (stat.label.includes('الساعات التطوعية')) {
-                                    totalVolunteerHours += Number(stat.value) || 0;
-                                }
-                                if (stat.label.includes('رضا المستفيدين') && typeof stat.value === 'string') {
-                                    satisfactionScores.push(parseFloat(stat.value));
-                                }
-                            });
-                        }
+                        const stats = p.data as StatsData;
+                        stats.forEach(stat => {
+                            if (stat.label === 'اجمالي المستفيدين') {
+                                totalBeneficiaries += Number(stat.value) || 0;
+                            }
+                            if (stat.label.includes('الساعات التطوعية') || stat.label.includes('الساعات الإثرائية')) {
+                                totalVolunteerHours += Number(stat.value) || 0;
+                            }
+                            if (stat.label.includes('رضا المستفيدين') && typeof stat.value === 'string') {
+                                satisfactionScores.push(parseFloat(stat.value));
+                            }
+                        });
                     }
                 });
                 
