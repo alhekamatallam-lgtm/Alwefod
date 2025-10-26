@@ -30,4 +30,22 @@ export const PROJECTS_CONFIG: ProjectConfig[] = [
         type: 'translation',
         dataSourceUrl: 'https://script.google.com/macros/s/AKfycbxn7_pbmGBEh8PhK88wCU7-8vNmufBeMNsIESNgcI4_rAhbUb26LvdcyKPGj0HU0B5vYw/exec',
     },
+    {
+        name: 'مشروع توزيع المصاحف',
+        type: 'quran-distribution',
+        dataSourceUrl: 'https://script.google.com/macros/s/AKfycbyR3z7ArUGz21pXBVGVMIYnJR_i4ryaIIpMJyYN7nCTsDj4vL7ZAao0fvNOoxYuMGTk/exec',
+        satisfactionDataSourceUrl: 'https://script.google.com/macros/s/AKfycbxzB9baPT80YZu-WMl_RJU0BCdCprVu6s912KTBIxifxFJcj5bXpPuJ4RDCMWRsY7mgiQ/exec',
+    },
+    {
+        name: 'مشروع تمكين',
+        type: 'tamkeen',
+        dataSourceUrl: 'https://script.google.com/macros/s/AKfycbz__gJd34HVSfrvEpFzibvbZA3sG_q4e2haIA1l__KsrFcPe8B2JRNDNwSCiFmVILkj/exec',
+        satisfactionDataSourceUrl: 'https://script.google.com/macros/s/AKfycbws6p_VicMYNySU2-Vudb5KjEZzRwTvnoXQ7jiCKFTHM1e4uGXEHPfeahsTW_wgxHGm4A/exec',
+    },
+    {
+        name: 'مشروع إثراء وأثر',
+        type: 'ethra-and-athar',
+        dataSourceUrl: 'https://script.google.com/macros/s/AKfycbxIqL6euKbMdJcqyFjGBo37rD-8ljWEMzUecjxj1mW5gmbcIquzXDJckUPherSJlvRT/exec',
+        satisfactionDataSourceUrl: 'https://script.google.com/macros/s/AKfycbwsYRA4pKf50whNABANki1xJ8bWGKzqiWjZIVPpN6FU_S73DB9HEIxCN81xcwF7-pQZ/exec',
+    },
 ];

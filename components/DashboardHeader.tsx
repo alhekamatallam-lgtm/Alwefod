@@ -22,16 +22,16 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ stats }) => {
                 نظرة شاملة على أبرز مؤشرات الأداء لجميع المشاريع
             </p>
         </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-            icon={<HeartIcon />} 
-            label="رضا المستفيدين العام" 
-            value={`${stats.overallSatisfaction.toFixed(0)}%`} 
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <StatCard 
             icon={<BriefcaseIcon />} 
             label="إجمالي المشاريع" 
             value={stats.totalProjects} 
+        />
+        <StatCard 
+            icon={<HourglassIcon />} 
+            label="إجمالي الساعات التطوعية" 
+            value={stats.totalVolunteerHours} 
         />
         <StatCard 
             icon={<UsersIcon />} 
@@ -39,9 +39,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ stats }) => {
             value={stats.totalBeneficiaries} 
         />
         <StatCard 
-            icon={<HourglassIcon />} 
-            label="إجمالي الساعات التطوعية" 
-            value={stats.totalVolunteerHours} 
+            icon={<HeartIcon />} 
+            label="رضا المستفيدين العام" 
+            value={`${stats.overallSatisfaction.toFixed(0)}%`} 
         />
       </div>
     </section>

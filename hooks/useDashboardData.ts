@@ -10,6 +10,12 @@ import {
     SuqiaProjectRawRecord,
     SuqiaSatisfactionRawRecord,
     TranslationProjectRawRecord,
+    QuranDistributionRawRecord,
+    QuranDistributionSatisfactionRawRecord,
+    TamkeenProjectRawRecord,
+    TamkeenSatisfactionRawRecord,
+    EthraAndAtharRawRecord,
+    EthraAndAtharSatisfactionRawRecord,
     Logo,
     SummaryStats,
     StatsData
@@ -24,11 +30,15 @@ import {
     processIftarProjectData,
     processSuqiaProjectData,
     processTranslationProjectData,
+    processQuranDistributionData,
+    processTamkeenProjectData,
+    processEthraAndAtharData,
 } from '../utils/dataProcessor';
 
-// Helper function to fetch and parse JSON from a URL
+// Helper function to fetch and parse JSON from a URL, with cache busting
 const fetchJson = async (url: string) => {
-    const response = await fetch(url);
+    const cacheBustUrl = `${url}${url.includes('?') ? '&' : '?'}cache_bust=${new Date().getTime()}`;
+    const response = await fetch(cacheBustUrl);
     if (!response.ok) {
         throw new Error(`Failed to fetch from ${url}: ${response.statusText}`);
     }
@@ -107,6 +117,33 @@ const useDashboardData = () => {
                                 case 'translation':
                                     processedData = processTranslationProjectData(records);
                                     break;
+                                case 'quran-distribution':
+                                    let quranSatisfactionRecords: QuranDistributionSatisfactionRawRecord[] = [];
+                                     if(projectConfig.satisfactionDataSourceUrl) {
+                                        const satisfactionData = await fetchJson(projectConfig.satisfactionDataSourceUrl);
+                                        const rawSatisfactionRecords = Array.isArray(satisfactionData) ? satisfactionData : Object.values(satisfactionData).flat();
+                                        quranSatisfactionRecords = cleanKeys(rawSatisfactionRecords) as QuranDistributionSatisfactionRawRecord[];
+                                    }
+                                    processedData = processQuranDistributionData(records as QuranDistributionRawRecord[], quranSatisfactionRecords);
+                                    break;
+                                case 'tamkeen':
+                                    let tamkeenSatisfactionRecords: TamkeenSatisfactionRawRecord[] = [];
+                                     if(projectConfig.satisfactionDataSourceUrl) {
+                                        const satisfactionData = await fetchJson(projectConfig.satisfactionDataSourceUrl);
+                                        const rawSatisfactionRecords = Array.isArray(satisfactionData) ? satisfactionData : Object.values(satisfactionData).flat();
+                                        tamkeenSatisfactionRecords = cleanKeys(rawSatisfactionRecords) as TamkeenSatisfactionRawRecord[];
+                                    }
+                                    processedData = processTamkeenProjectData(records as TamkeenProjectRawRecord[], tamkeenSatisfactionRecords);
+                                    break;
+                                case 'ethra-and-athar':
+                                    let ethraSatisfactionRecords: EthraAndAtharSatisfactionRawRecord[] = [];
+                                     if(projectConfig.satisfactionDataSourceUrl) {
+                                        const satisfactionData = await fetchJson(projectConfig.satisfactionDataSourceUrl);
+                                        const rawSatisfactionRecords = Array.isArray(satisfactionData) ? satisfactionData : Object.values(satisfactionData).flat();
+                                        ethraSatisfactionRecords = cleanKeys(rawSatisfactionRecords) as EthraAndAtharSatisfactionRawRecord[];
+                                    }
+                                    processedData = processEthraAndAtharData(records as EthraAndAtharRawRecord[], ethraSatisfactionRecords);
+                                    break;
                                 default:
                                     throw new Error(`Unknown project type: ${projectConfig.type}`);
                             }
@@ -137,14 +174,17 @@ const useDashboardData = () => {
                     if (p.data && !p.error) {
                         const stats = p.data as StatsData;
                         stats.forEach(stat => {
-                            if (stat.label === 'اجمالي المستفيدين') {
+                            if (stat.label.includes('المستفيدين') || stat.label.includes('المستفيدات')) {
                                 totalBeneficiaries += Number(stat.value) || 0;
                             }
-                            if (stat.label.includes('الساعات التطوعية') || stat.label.includes('الساعات الإثرائية')) {
+                            if (stat.label.includes('الساعات التطوعية') || stat.label.includes('الساعات الإثرائية') || stat.label.includes('الساعات التدريبية')) {
                                 totalVolunteerHours += Number(stat.value) || 0;
                             }
                             if (stat.label.includes('رضا المستفيدين') && typeof stat.value === 'string') {
-                                satisfactionScores.push(parseFloat(stat.value));
+                                const score = parseFloat(stat.value);
+                                if (score > 0) {
+                                    satisfactionScores.push(score);
+                                }
                             }
                         });
                     }

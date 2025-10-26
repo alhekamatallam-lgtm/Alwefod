@@ -1,3 +1,5 @@
+// Fix: Removed conflicting import. The 'Partner' interface is defined in this file.
+
 export interface Partner {
   'الشريك': string;
   'الشعار': string;
@@ -82,7 +84,43 @@ export interface TranslationProjectRawRecord {
     'عدد الأسئلة؟': number;
     'عدد المستفيدين:': number;
     'ماهي اللغات المستخدمة في الترجمة؟': string;
+    'عدد مرات الإرشاد المكاني:': number;
+    'عدد الكتب التي تم توزيعها:': number;
 }
+
+// Quran Distribution Project
+export interface QuranDistributionRawRecord {
+    'عدد المصاحف الموزعة': number;
+    'عدد المتطوعين:': number;
+    'الساعات التطوعية': number;
+    'نقاط توزيع المصاحف': string;
+}
+export interface QuranDistributionSatisfactionRawRecord {
+    [key: string]: string | number;
+}
+
+// Tamkeen Project
+export interface TamkeenProjectRawRecord {
+    'الوقت الزمني الفعلي للقاءات التدريبية': number;
+    'عدد الحاضرات؟ ': number;
+    'اسم الدورة': string;
+    'اسم المدربة': string;
+    'عدد المستهدفات في اللقاء الواحد ': number;
+}
+export interface TamkeenSatisfactionRawRecord {
+    [key: string]: string | number;
+}
+
+// Ethra and Athar Project
+export interface EthraAndAtharRawRecord {
+  'مجموع الساعات التطوعية (لكامل الفريق):': string | number;
+  'عدد الهدايا التي تم توزيعها؟': string | number;
+  'عدد المستفيدات:': string | number;
+}
+export interface EthraAndAtharSatisfactionRawRecord {
+    [key: string]: string | number;
+}
+
 
 // Generic Stat type
 export interface Stat {
@@ -93,7 +131,7 @@ export interface Stat {
 export type StatsData = Stat[];
 
 // Project Configuration & Processed Data
-export type ProjectType = 'wofood' | 'walak-al-ajer' | 'iftar' | 'suqia' | 'translation';
+export type ProjectType = 'wofood' | 'walak-al-ajer' | 'iftar' | 'suqia' | 'translation' | 'quran-distribution' | 'tamkeen' | 'ethra-and-athar';
 export interface ProjectConfig {
     name: string;
     type: ProjectType;

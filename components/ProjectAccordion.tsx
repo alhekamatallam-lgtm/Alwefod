@@ -15,9 +15,12 @@ const ProjectAccordion: React.FC<ProjectAccordionProps> = ({ project }) => {
     if (project.error) return '-';
     if (project.data) {
         const stats = project.data as StatsData;
-        const beneficiaryStat = stats.find(s => s.label.includes('المستفيدين'));
+        // Fix: Make search more robust to handle different grammatical forms of "beneficiaries"
+        const beneficiaryStat = stats.find(s => s.label.includes('المستفيد') && !s.label.includes('رضا'));
         if (beneficiaryStat) {
-            const value = typeof beneficiaryStat.value === 'string' ? parseFloat(beneficiaryStat.value.replace(/[^0-9.]/g, '')) : beneficiaryStat.value;
+            const value = typeof beneficiaryStat.value === 'string' 
+                ? parseFloat(beneficiaryStat.value.replace(/[^0-9.]/g, '')) 
+                : beneficiaryStat.value;
             if (!isNaN(value)) {
                  return value.toLocaleString('ar-EG');
             }
