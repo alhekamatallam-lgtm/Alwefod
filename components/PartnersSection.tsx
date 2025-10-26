@@ -23,7 +23,7 @@ const PartnersSection: React.FC<PartnersSectionProps> = ({ partners }) => {
               <img 
                 src={partner['الشعار']} 
                 alt={partner['الشريك']} 
-                className="max-h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 ease-in-out cursor-pointer" 
+                className="max-h-20 w-auto object-contain transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer" 
               />
             </div>
           ))}
