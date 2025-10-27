@@ -321,12 +321,43 @@ export const processQuranDistributionData = (
         { icon: 'HourglassIcon', label: 'الساعات التطوعية', value: volunteerHours },
         { icon: 'BriefcaseIcon', label: 'نقاط التوزيع', value: distributionPoints.size },
     ];
-
-    let chart: ChartConfig | undefined = undefined;
-    if(satisfaction > 0) {
+    
+    if (satisfaction > 0) {
         stats.push({ icon: 'HeartIcon', label: 'رضا المستفيدين', value: `${satisfaction.toFixed(1)}%` });
-        chart = createSatisfactionChart(satisfaction);
     }
+
+    const chart: ChartConfig = {
+        type: 'bar',
+        data: {
+            labels: ['نقاط التوزيع', 'الساعات التطوعية', 'عدد المتطوعين'],
+            datasets: [{
+                label: 'المؤشرات',
+                data: [distributionPoints.size, volunteerHours, volunteers],
+                backgroundColor: ['#4ade80', '#22c55e', '#16a34a'],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: { 
+                    display: true, 
+                    text: 'مؤشرات أداء المشروع', 
+                    font: { family: 'Cairo' } 
+                }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true,
+                    ticks: { 
+                        font: { family: 'Cairo' },
+                        precision: 0 
+                    },
+                },
+                x: { ticks: { font: { family: 'Cairo' } } },
+            }
+        }
+    };
 
     return { stats, chart };
 };
