@@ -11,6 +11,7 @@ export interface Logo {
 
 // Wofood Project
 export interface WofoodProjectRecord {
+  'طابع زمني'?: string;
   'عدد الساعات': number;
   'عدد البرامج العلمية': number;
   'اسم الوفد': string;
@@ -31,6 +32,7 @@ export interface ComparisonData {
 
 // Walak Al Ajer Project
 export interface WalakAlAjerRawRecord {
+    'طابع زمني'?: string;
     'الساعات التطوعية للفترة الأولى': number;
     'عدد الساعات التطوعية (الفترة الثانية)': number;
     'عدد المستفيدين من الجنائز للفترة الثانية': number;
@@ -44,11 +46,13 @@ export interface WalakAlAjerRawRecord {
 
 // Iftar Project
 export interface IftarProjectRawRecord {
+    'طابع زمني'?: string;
     'اجمالي عدد العمال والمشرفين': number;
     'عدد المشرفين': number;
     'العـدد الكلي للوجبات؟': number;
 }
 export interface IftarSatisfactionRawRecord {
+    'طابع زمني'?: string;
     'ما مدى رضاك عن تعامل المشرف مع العمال والمستفيدين؟ ': number;
     'ما مدى رضاك عن تعامل العمال مع المستفيدين؟': number;
     'ما مدى رضاك عن مظهر فريق العمل ؟ ': number;
@@ -61,12 +65,14 @@ export interface IftarSatisfactionRawRecord {
 
 // Suqia Project
 export interface SuqiaProjectRawRecord {
+    'طابع زمني'?: string;
     'عدد العمال': number;
     'مكان توزيع سقيا الماء؟': string;
     'كم العـدد الكلي للعبوات؟': number;
     'عدد المشرفين': number;
 }
 export interface SuqiaSatisfactionRawRecord {
+    'طابع زمني'?: string;
     'ما مدى رضاك عن تواصل المشرف مع العمال والمستفيدين؟ ': number;
     'ما مدى رضاك عن مظهر فريق العمل ؟ ': number;
     'ما مدى رضاك عن تعامل العمال مع المستفيدين؟': number;
@@ -80,6 +86,7 @@ export interface SuqiaSatisfactionRawRecord {
 
 // Translation Project
 export interface TranslationProjectRawRecord {
+    'طابع زمني'?: string;
     'عدد الساعات التطوعية:': number;
     'عدد الأسئلة؟': number;
     'عدد المستفيدين:': number;
@@ -90,17 +97,20 @@ export interface TranslationProjectRawRecord {
 
 // Quran Distribution Project
 export interface QuranDistributionRawRecord {
+    'طابع زمني'?: string;
     'عدد المصاحف الموزعة': number;
     'عدد المتطوعين:': number;
     'الساعات التطوعية': number;
     'نقاط توزيع المصاحف': string;
 }
 export interface QuranDistributionSatisfactionRawRecord {
+    'طابع زمني'?: string;
     [key: string]: string | number;
 }
 
 // Tamkeen Project
 export interface TamkeenProjectRawRecord {
+    'طابع زمني'?: string;
     'الوقت الزمني الفعلي للقاءات التدريبية': number;
     'عدد الحاضرات؟ ': number;
     'اسم الدورة': string;
@@ -108,19 +118,31 @@ export interface TamkeenProjectRawRecord {
     'عدد المستهدفات في اللقاء الواحد ': number;
 }
 export interface TamkeenSatisfactionRawRecord {
+    'طابع زمني'?: string;
     [key: string]: string | number;
 }
 
 // Ethra and Athar Project
 export interface EthraAndAtharRawRecord {
+  'طابع زمني'?: string;
   'مجموع الساعات التطوعية (لكامل الفريق):': string | number;
   'عدد الهدايا التي تم توزيعها؟': string | number;
   'عدد المستفيدات:': string | number;
 }
 export interface EthraAndAtharSatisfactionRawRecord {
+    'طابع زمني'?: string;
     [key: string]: string | number;
 }
 
+// Al-Rifada Project
+export interface AlRifadaProjectRawRecord {
+    'طابع زمني'?: string;
+    'اجمالي عدد العمال والمشرفين': number;
+    'عدد التريلات (سيارات التوزيع)': number;
+    'العـدد الكلي للوجبات؟': number;
+    'مكان التوزيع:': string;
+    'عـدد مواقع التوزيع؟': number;
+}
 
 // Generic Stat type
 export interface Stat {
@@ -130,18 +152,43 @@ export interface Stat {
 }
 export type StatsData = Stat[];
 
+// Chart Types
+export interface ChartDataset {
+  label: string;
+  data: number[];
+  backgroundColor: string | string[];
+  borderColor?: string | string[];
+  borderWidth?: number;
+}
+
+export interface ChartConfig {
+  type: 'bar' | 'doughnut' | 'pie';
+  data: {
+    labels: string[];
+    datasets: ChartDataset[];
+  };
+  options?: any;
+}
+
 // Project Configuration & Processed Data
-export type ProjectType = 'wofood' | 'walak-al-ajer' | 'iftar' | 'suqia' | 'translation' | 'quran-distribution' | 'tamkeen' | 'ethra-and-athar';
+export type ProjectType = 'wofood' | 'walak-al-ajer' | 'iftar' | 'suqia' | 'translation' | 'quran-distribution' | 'tamkeen' | 'ethra-and-athar' | 'al-rifada';
 export interface ProjectConfig {
     name: string;
     type: ProjectType;
     dataSourceUrl: string;
     satisfactionDataSourceUrl?: string;
 }
+
+export interface ProjectProcessedData {
+    stats: StatsData;
+    chart?: ChartConfig;
+}
+
 export interface ProcessedProject {
   name: string;
   type: ProjectType;
   data: StatsData | null;
+  chartData?: ChartConfig | null;
   error?: string | null;
 }
 
@@ -159,4 +206,5 @@ export interface DashboardData {
     projects: ProcessedProject[];
     partners: Partner[];
     summaryStats?: SummaryStats;
+    summaryChart?: ChartConfig;
 }

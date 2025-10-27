@@ -48,4 +48,9 @@ export const PROJECTS_CONFIG: ProjectConfig[] = [
         dataSourceUrl: 'https://script.google.com/macros/s/AKfycbxIqL6euKbMdJcqyFjGBo37rD-8ljWEMzUecjxj1mW5gmbcIquzXDJckUPherSJlvRT/exec',
         satisfactionDataSourceUrl: 'https://script.google.com/macros/s/AKfycbwsYRA4pKf50whNABANki1xJ8bWGKzqiWjZIVPpN6FU_S73DB9HEIxCN81xcwF7-pQZ/exec',
     },
+    {
+        name: 'مشروع الرفادة',
+        type: 'al-rifada',
+        dataSourceUrl: 'https://script.google.com/macros/s/AKfycbw8EY4LKm0F2G2LIK-eQ4t4rOPgb1-VAfVmTmc3Hilhz0Ka9VGiZdm5EDlEVkyqWYLXpw/exec',
+    },
 ];

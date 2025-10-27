@@ -3,6 +3,7 @@ import { ProcessedProject, StatsData } from '../types';
 import ProjectStatsDisplay from './ProjectStatsDisplay';
 import ChevronDownIcon from './icons/ChevronDownIcon';
 import UsersIcon from './icons/UsersIcon';
+import ProjectChart from './ProjectChart';
 
 interface ProjectAccordionProps {
   project: ProcessedProject;
@@ -53,10 +54,15 @@ const ProjectAccordion: React.FC<ProjectAccordionProps> = ({ project }) => {
       </button>
 
       {isOpen && (
-        <div id={`project-content-${project.type}`} className="p-6 border-t">
+        <div id={`project-content-${project.type}`} className="p-6 border-t space-y-8">
           {project.error && <p className="text-red-600 text-center">خطأ: {project.error}</p>}
           {!project.error && project.data && (
             <ProjectStatsDisplay data={project.data as StatsData} />
+          )}
+          {!project.error && project.chartData && (
+            <div className="max-w-md mx-auto mt-4">
+              <ProjectChart chartConfig={project.chartData} />
+            </div>
           )}
         </div>
       )}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 // Fix: Changed import path to be relative.
 import useDashboardData from './hooks/useDashboardData';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -7,7 +7,8 @@ import ProjectSection from './components/ProjectSection';
 import DashboardHeader from './components/DashboardHeader';
 
 const App: React.FC = () => {
-  const { data, loading, error } = useDashboardData();
+  const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
+  const { data, loading, error } = useDashboardData(dateRange);
 
   const renderContent = () => {
     if (loading) {
@@ -49,7 +50,14 @@ const App: React.FC = () => {
         </header>
         
         <main className="flex-grow container mx-auto px-4 py-12 space-y-16">
-            {data.summaryStats && <DashboardHeader stats={data.summaryStats} />}
+            {data.summaryStats && (
+                <DashboardHeader 
+                    stats={data.summaryStats} 
+                    dateRange={dateRange} 
+                    onDateChange={setDateRange}
+                    summaryChart={data.summaryChart}
+                />
+            )}
             
             {data.projects && data.projects.length > 0 && <ProjectSection projects={data.projects} />}
 
